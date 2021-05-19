@@ -52,23 +52,6 @@ genres_group <- genres_group[order(genres_group$n,decreasing = TRUE),]
 # Keep 10 specific genres for analysis
 genres_ten <- head(genres_group[-c(1,9),],10)
 
-# Scatter plot for 10 genres of interest with text labels
-ggplot(genres_ten, aes(x=genre,y=mean_imdb,size=n,color=n)) + 
-  geom_point() +
-  geom_text(aes(label=n),color="white",family="Artifakt Element",size=6)+
-  theme_classic() +
-  scale_color_gradient(low="#111E4F",high="#74D3E6",guide=FALSE) +
-  scale_size_continuous(range = c(15, 40),guide=guide_legend(override.aes=list(size = c(7.5,10,12.5,15),colour=c("#111E4F","#325a81","#5396b3","#74D3E6")))) + 
-  theme(
-    panel.grid.major = element_blank(), 
-    panel.grid.minor = element_blank(),
-    panel.background = element_rect(fill = "transparent",colour = NA),
-    plot.background = element_rect(fill = "transparent",colour = NA),
-    legend.background = element_rect(fill = "transparent",colour = NA),
-    axis.text.y = element_text(color="#111E4F",size = 12, family="Artifakt Element"),
-    legend.key.width = unit(.5,"cm")
-  )
-
 # Scatter plot for 10 genres of interest
 genre_point <- ggplot(genres_ten, aes(x=genre,y=mean_imdb,size=n,color=n)) + 
   geom_point() +
@@ -90,22 +73,6 @@ genre_point <- ggplot(genres_ten, aes(x=genre,y=mean_imdb,size=n,color=n)) +
     legend.key.width = unit(.5,"cm")
   )
 ggsave("Images/Genre_Point.png", genre_point, width=11, height=7, bg = "transparent")
-
-# Bar chart for 10 genres of interest with text (not used in final visualization)
-ggplot(genres_ten,aes(x=genre,y=n,fill=mean_imdb)) +
-  geom_bar(stat="identity") + 
-  geom_text(aes(label=round(mean_imdb,digits=2)),vjust = 1.5,color="white",family="Artifakt Element",size=6) + 
-  theme_classic() +
-  scale_fill_gradient(low="#111E4F",high="#74D3E6",name="IMDb Score") +
-  theme(
-    panel.grid.major = element_blank(), 
-    panel.grid.minor = element_blank(),
-    panel.background = element_rect(fill = "transparent",colour = NA),
-    plot.background = element_rect(fill = "transparent",colour = NA),
-    legend.background = element_rect(fill = "transparent",colour = NA),
-    axis.text.y = element_text(color="#111E4F",size = 12, family="Artifakt Element"),
-    legend.key.width = unit(.5,"cm")
-  )
 
 # Bar chart for 10 genres of interest (not used in final visualization)
 genre_bar <- ggplot(genres_ten,aes(x=genre,y=n,fill=mean_imdb)) +
@@ -148,21 +115,6 @@ genre_avg <- genre_split
 genre_avg <- genre_avg %>% mutate(year = year(date_released)) %>% group_by(year) %>% summarize(avg_imdb=mean(imdb_score))
 genre_avg$year <- as.Date(as.character(genre_avg$year),"%Y")
 
-# Scatter plot for IMDb score over time colored by genre with text
-ggplot() + 
-  geom_point(data=genre_split,aes(x=date_released,y=imdb_score,color=genres_ten)) +
-  geom_line(data=genre_avg,aes(x=year,y=avg_imdb),color = "#111E4F",size=1.5) +
-  theme_classic() +
-  scale_colour_manual(name="Genre",values=c("#111E4F","#1c325f","#274670","#325a81","#3c6e92","#4882a2","#5396b3","#5eaac4","#68bed5","#74D3E6")) +
-  theme(
-    panel.grid.major = element_blank(), 
-    panel.grid.minor = element_blank(),
-    panel.background = element_rect(fill = "transparent",colour = NA),
-    plot.background = element_rect(fill = "transparent",colour = NA),
-    legend.background = element_rect(fill = "transparent",colour = NA),
-    axis.text = element_text(color="#111E4F",size = 12, family="Artifakt Element")
-  )
-
 # Scatter plot for IMDb score over time colored by genre
 time_plot <- ggplot() + 
   geom_point(data=genre_split,aes(x=date_released,y=imdb_score,color=genres_ten)) +
@@ -195,27 +147,11 @@ ratings$ymin = c(0, head(ratings$ymax, n=-1))
 ratings$labelPosition <- (ratings$ymax + ratings$ymin) / 2
 ratings$label <- paste0(ratings$n)
 
-# Donut chart for ratings with text
-ggplot(ratings, aes(ymax=ymax, ymin=ymin, xmax=4, xmin=3, fill=rated)) +
-  geom_rect() +
-  geom_text(x=3.5, aes(y=labelPosition, label=label), color="white",family="Artifakt Element",size=5) +
-  scale_fill_manual(name="Rating",values=c("#111E4F","#294b74","#42789a","#5ba5c0","#74D3E6")) +
-  coord_polar(theta="y") +
-  xlim(c(1, 4)) +
-  theme_void() +
-  theme(
-    panel.grid.major = element_blank(), 
-    panel.grid.minor = element_blank(),
-    panel.background = element_rect(fill = "transparent",colour = NA),
-    plot.background = element_rect(fill = "transparent",colour = NA),
-    legend.background = element_rect(fill = "transparent",colour = NA),
-  )
-
 # Donut chart for ratings
 ratings_plot <- ggplot(ratings, aes(ymax=ymax, ymin=ymin, xmax=4, xmin=3, fill=rated)) +
   geom_rect() +
   geom_text(x=3.5, aes(y=labelPosition, label=label), color="white",family="Artifakt Element",size=5) +
-  scale_fill_manual(name="Rating",values=c("#111E4F","#294b74","#42789a","#5ba5c0","#74D3E6")) +
+  scale_fill_manual(name="Rating",values=c("#111E4F","#325A81","#5397B4","#74D3E6")) +
   coord_polar(theta="y") +
   xlim(c(1, 4)) +
   theme_void() +
@@ -248,25 +184,6 @@ disney <- streaming[streaming$Disney.==1,]
 disney <- disney[!is.na(disney$IMDb),]
 disney_mu <- mean(disney$IMDb)
 
-# Density Plot for IMDb scores by streaming platform with text
-ggplot() + 
-  geom_density(data=prime,aes(x=IMDb),alpha=0.2,color="grey60",fill="grey60") + 
-  geom_density(data=netflix,aes(x=IMDb),alpha=0.2,color="grey75",fill="grey75") + 
-  geom_density(data=hulu,aes(x=IMDb),alpha=0.2,color="grey90",fill="grey90") + 
-  geom_density(data=disney,aes(x=IMDb),alpha=0.4,color="#111E4F",fill="#111E4F") + 
-  geom_line(aes(x=prime_mu,y=c(0,.4)), color="grey60", linetype="dashed",size=1.5) +
-  geom_line(aes(x=netflix_mu,y=c(0,.4)), color="grey75", linetype="dashed",size=1.5) +
-  geom_line(aes(x=hulu_mu,y=c(0,.4)), color="grey90", linetype="dashed",size=1.5) +
-  geom_line(aes(x=disney_mu,y=c(0,.4)), color="#111E4F", linetype="dashed",size=1.5) +
-  theme_classic() +
-  theme(
-    panel.grid.major = element_blank(), 
-    panel.grid.minor = element_blank(),
-    panel.background = element_rect(fill = "transparent",colour = NA),
-    plot.background = element_rect(fill = "transparent",colour = NA),
-    axis.text = element_text(color="#333333",size=12,family="Artifakt Element")
-  )
-
 # Density Plot for IMDb scores by streaming platform
 density_plot <- ggplot() + 
   geom_density(data=prime,aes(x=IMDb),alpha=0.2,color="grey60",fill="grey60") + 
@@ -292,23 +209,6 @@ ggsave("Images/Quality_Density.png", density_plot, width=10, height=6, bg = "tra
 platform <- streaming %>% summarize(Netflix=sum(Netflix),Hulu=sum(Hulu),Prime.Video=sum(Prime.Video),Disney.=sum(Disney.))
 platform <- data.frame("Platform"=c('Prime Video','Netlflix','Hulu','Disney+'),"Count"=c(12354,3560,903,554))
 platform$Platform <- factor(platform$Platform,levels=c('Prime Video','Netlflix','Hulu','Disney+'))
-
-# Waffle plot colored by streaming platform with text (1 square = 10 titles)
-ggplot(platform,aes(fill = Platform, values = Count/10)) +
-  expand_limits(x=c(0,0), y=c(0,0)) +
-  coord_equal() +
-  labs(fill = NULL, colour = NULL) +
-  theme_ipsum_rc(grid="") +
-  theme_enhance_waffle() +
-  scale_fill_manual(values=c("grey60","grey75","grey90","#111E4F")) + 
-  geom_waffle(n_rows = 20, 
-              size = 0, 
-              radius = unit(2, "pt"),
-              height = 0.8, 
-              width = 0.8) +
-  theme(
-    legend.position = "bottom"
-  )
 
 # Waffle plot colored by streaming platform (1 square = 10 titles)
 waffle_plot <- ggplot(platform,aes(fill = Platform, values = Count/10)) +
